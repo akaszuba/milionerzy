@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Who Wants to Be a Millionaire</title>
+    <title>Milionerzy</title>
     <style>
         body {
             margin: 0;
@@ -343,7 +343,6 @@
             background-color: #303f9f;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
             padding-right: 10px;
             color: white;
             font-weight: bold;
@@ -408,7 +407,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">WHO WANTS TO BE A MILLIONAIRE</div>
+            <div class="logo">Milionerzy OSP Ługi</div>
         </div>
 
         <div class="game-info">
@@ -420,7 +419,7 @@
             <div class="lifeline" id="fifty-fifty" title="50:50">50:50</div>
             <div class="lifeline" id="phone-friend" title="Telefon do przyjaciela">☎️</div>
             <div class="lifeline" id="audience-poll" title="Pytanie do publiczności">👥</div>
-            <div class="lifeline" id="switch-question" title="Zamiana pytania">👥</div>
+            <div class="lifeline" id="switch-question" title="Zamiana pytania">🔄</div>
         </div>
 
         <div class="question-container">
@@ -443,7 +442,7 @@
     </div>
 
     <div class="start-screen hidden" id="start-screen">
-        <div class="logo shining-effect">MILIONERZY
+        <div class="logo shining-effect">Milionerzy OSP Ługi
         </div>
         <div>
             <label for="numberOfTeams">Ilość drużyn:</label>
@@ -479,9 +478,9 @@
     </div>
 
     <div class="phone-friend-modal hidden" id="phone-friend-modal">
-        <div class="phone-title">Phone a Friend</div>
+        <div class="phone-title">Telefon do przyjaciela</div>
         <div class="phone-conversation" id="phone-conversation">
-            Calling your friend...
+            Zapytaj przyjaciela o poprawną odpowiedź...
         </div>
         <button class="close-phone-btn" id="close-phone-btn">Zanknij</button>
     </div>
@@ -678,7 +677,11 @@
                 }else{
                     audienceBtn.classList.remove('used');
                 }           
-
+                if (gameState.teams[gameState.currentTeam].switchUsed === true) {
+                    switchBtn.classList.add('used');
+                }else{
+                    switchBtn.classList.remove('used');
+                } 
 
                 // Update money ladder
                 createMoneyLadder();
@@ -769,60 +772,28 @@
 
                 gameState.teams[gameState.currentTeam].switchUsed = true;
 
+                drawQuestion();
             }
 
             // Use Phone a Friend lifeline
             function usePhoneFriend() {
-                if (phoneUsed || !gameActive) return;
+                if (gameState.teams[gameState.currentTeam].friendUsed === true) return;
 
-                phoneUsed = true;
+                gameState.teams[gameState.currentTeam].friendUsed = true;
+                
                 phoneBtn.classList.add('used');
-
-                const question = questions[currentQuestionIndex];
-                const correctIndex = question.correctIndex;
-                const answerLetters = ['A', 'B', 'C', 'D'];
-
-                // Generate conversation
-                let confidence;
-                // Higher levels get less confident answers
-                if (currentQuestionIndex < 5) {
-                    confidence = Math.random() > 0.1 ? 'very confident' : 'not sure';
-                } else if (currentQuestionIndex < 10) {
-                    confidence = Math.random() > 0.3 ? 'pretty sure' : 'really unsure';
-                } else {
-                    confidence = Math.random() > 0.5 ? 'think' : 'really don\'t know but would guess';
-                }
-
-                // 75% chance to get the right answer, 25% chance to get a wrong one
-                const friendAnswer = Math.random() > 0.25 ? correctIndex : [0, 1, 2, 3].filter(i => i !== correctIndex)[Math.floor(Math.random() * 3)];
-
-                const conversation = `
-                <strong>You:</strong> Hi friend, I need help with this question.<br>
-                <strong>Friend:</strong> Hey! What's the question?<br>
-                <strong>You:</strong> ${question.question}<br>
-                <strong>Friend:</strong> Hmm, let me think about this for a moment...<br>
-                <strong>You:</strong> The options are:<br>
-                A: ${question.answers[0]}<br>
-                B: ${question.answers[1]}<br>
-                C: ${question.answers[2]}<br>
-                D: ${question.answers[3]}<br>
-                <strong>Friend:</strong> I'm ${confidence} the answer is ${answerLetters[friendAnswer]}: ${question.answers[friendAnswer]}.<br>
-                <strong>You:</strong> Thanks for your help!<br>
-                <strong>Friend:</strong> Good luck! Hope that helps.
-                `;
-
-                phoneConversation.innerHTML = conversation;
+                
                 phoneModal.classList.remove('hidden');
             }
 
             // Use Ask the Audience lifeline
             function useAudiencePoll() {
-                if (audienceUsed || !gameActive) return;
+                if (gameState.teams[gameState.currentTeam].publicityUsed === true) return;
 
-                audienceUsed = true;
+                publicityUsed = true;
                 audienceBtn.classList.add('used');
 
-                const question = questions[currentQuestionIndex];
+                const question = questions[gameState.currentQuestionIndex];
                 const correctIndex = question.correctIndex;
 
                 // Generate audience percentages
@@ -830,15 +801,8 @@
                 let percentages = [0, 0, 0, 0];
 
                 // Base chance for correct answer decreases as question level increases
-                let correctBasePercentage;
-                if (currentQuestionIndex < 5) {
-                    correctBasePercentage = 70;
-                } else if (currentQuestionIndex < 10) {
-                    correctBasePercentage = 50;
-                } else {
-                    correctBasePercentage = 35;
-                }
-
+                let correctBasePercentage = 35 + Math.floor(40 * (gameState.maxRounds - gameState.round + 1)/ gameState.maxRounds);
+                
                 // Add some randomness to the correct answer percentage
                 percentages[correctIndex] = Math.min(90, correctBasePercentage + Math.floor(Math.random() * 15));
 
@@ -932,7 +896,7 @@
                 phoneModal.classList.add('hidden');
             });
 
-            switchBtn.addEventListener('click', switchQuestion());
+            switchBtn.addEventListener('click', switchQuestion);
             // Create initial money ladder
             // createMoneyLadder();
 
