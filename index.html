@@ -628,8 +628,6 @@
                 usedQuestions.push(gameState.currentQuestionIndex);
                 setUsedQuestions(usedQuestions);
 
-                console.log(gameState.currentQuestionIndex);
-                console.log(unusedQuestions);
 
                 updateUI();
             }
@@ -724,7 +722,7 @@
                         gameState.teams[gameState.currentTeam].score++;
                     }
                     nextQuestion();
-                }, 100);
+                }, 1000);
             }
 
             // End game
@@ -852,6 +850,17 @@
                 audiencePollModal.classList.remove('hidden');
             }
 
+            function randomizeAnswers(){
+                questions.forEach((q)=>{
+                    let rightAnswer = q.answers[q.correctIndex];
+                    q.answers.sort(()=> 0.5- Math.random());
+                    let newIndex = q.answers.indexOf(rightAnswer);
+                    console.log(`${q.correctIndex} -> ${newIndex}`);
+                    q.correctIndex = newIndex;
+
+                });
+            }
+
             // Event listeners
             startBtn.addEventListener('click', startGame);
             restartBtn.addEventListener('click', () => {
@@ -902,6 +911,8 @@
 
 
             initializeFromStorage();
+            randomizeAnswers();
+
 
             if (gameState.gameStarted) {
                 updateUI();
