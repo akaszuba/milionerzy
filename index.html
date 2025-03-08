@@ -18,6 +18,14 @@
             overflow: hidden;
         }
 
+        .overlay {
+            background-color: rgba(0, 0, 0, 0);
+            bottom: 0;
+            left: 0;
+            position: fixed;
+            right: 0;
+            top: 0;
+        }
         .container {
             flex: 1;
             display: flex;
@@ -490,6 +498,10 @@
         <button class="close-phone-btn" id="close-phone-btn">Zanknij</button>
     </div> 
 
+    <div id="no-clicks" class="overlay hidden">
+
+    </div>
+
     <script src="questions.js"></script>
     <script>
         const LOCAL_STORAGE_STATE_KEY = "game-state";
@@ -573,6 +585,7 @@
             const numberOfRoundsInput = document.getElementById('numberOfRounds');
             const initBtn = document.getElementById('start-init');
             const initContainer = document.getElementById('init');
+            const overlay = document.getElementById('no-clicks');
 
             // Create money ladder
             function createMoneyLadder() {
@@ -748,8 +761,10 @@
                     }else{
                         loseAutdio.play();
                     }
+                    overlay.classList.remove('hidden');
+
                 setTimeout(() => {
-                   
+                    overlay.classList.add('hidden');
                     nextQuestion();
                 }, 6000);
             }
