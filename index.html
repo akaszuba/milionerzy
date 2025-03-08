@@ -620,7 +620,7 @@
                 var numberOfTeams = Number.parseInt(numberOfTeamsInput.value);
 
                 for (let i = 0; i < numberOfTeams; i++) {
-                    gameState.teams.push(initTeam(`Drużuna #${i + 1}`));
+                    gameState.teams.push(initTeam(`Drużyna #${i + 1}`));
                 }
                 gameState.gameStarted = true;
                 gameState.currentTeam = numberOfTeams;
@@ -832,7 +832,7 @@
             function useAudiencePoll() {
                 if (gameState.teams[gameState.currentTeam].publicityUsed === true) return;
 
-                publicityUsed = true;
+                gameState.teams[gameState.currentTeam].publicityUsed = true;
                 audienceBtn.classList.add('used');
 
                 const question = questions[gameState.currentQuestionIndex];
