@@ -843,13 +843,13 @@
                 let percentages = [0, 0, 0, 0];
 
                 // Base chance for correct answer decreases as question level increases
-                let correctBasePercentage = 35 + Math.floor(40 * (gameState.maxRounds - gameState.round + 1) / gameState.maxRounds);
+                let correctBasePercentage = 35 + Math.floor(30 * (gameState.maxRounds - gameState.round + 1) / gameState.maxRounds);
 
                 // Add some randomness to the correct answer percentage
                 percentages[correctIndex] = Math.min(90, correctBasePercentage + Math.floor(Math.random() * 15));
 
                 // Distribute remaining percentage among incorrect answers
-                const remainingPercentage = 100 - percentages[correctIndex];
+                let remainingPercentage = 100 - percentages[correctIndex];
                 let remainingIndices = [0, 1, 2, 3].filter(i => i !== correctIndex);
 
                 // Randomly assign percentages to the remaining answers
@@ -858,12 +858,12 @@
                     const idx = remainingIndices[randomIdx];
                     const pct = Math.floor(Math.random() * remainingPercentage * 0.7);
                     percentages[idx] = pct;
+                    remainingPercentage -= pct;
                     remainingIndices.splice(randomIdx, 1);
                 }
 
                 // Last index gets the remainder
-                percentages[remainingIndices[0]] = remainingPercentage - percentages.filter((p, i) => i !== correctIndex && i !== remainingIndices[0]).reduce((a, b) => a + b, 0);
-
+                percentages[remainingIndices[0]] += remainingPercentage;
                 // Create poll bars
                 pollBars.innerHTML = '';
                 const letters = ['A', 'B', 'C', 'D'];
