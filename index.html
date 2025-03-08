@@ -410,6 +410,11 @@
             <div class="logo">Milionerzy OSP Ługi</div>
         </div>
 
+        <div id="init" class="start-screen">
+            <div class="logo">Milionerzy OSP Ługi</div>
+            <button class="start-btn" id="start-init">Start</button>
+        </div>
+
         <div class="game-info">
             <div class="question-number">Runda: <span id="current-question">1</span></div>
             <div class="current-money hidden">Current: $<span id="current-prize">0</span></div>
@@ -483,12 +488,17 @@
             Zapytaj przyjaciela o poprawną odpowiedź...
         </div>
         <button class="close-phone-btn" id="close-phone-btn">Zanknij</button>
-    </div>
+    </div> 
 
     <script src="questions.js"></script>
     <script>
         const LOCAL_STORAGE_STATE_KEY = "game-state";
         const LOCAL_STORAGE_QUESTIONS = "used-questions";
+
+        const mainThemeAudio = new Audio('main_theme.mp3');
+        const nextQuestionAudio = new Audio('pytanie.mp3');
+        const winAudio = new Audio('wygrana.mp3');
+        const loseAutdio = new Audio('przegrana.mp3');
 
         document.addEventListener('DOMContentLoaded', function () {
             // Game variables
@@ -530,6 +540,7 @@
 
             function showStartScreen() {
                 startScreen.classList.remove('hidden')
+                mainThemeAudio.play();
             }
 
 
@@ -560,6 +571,8 @@
             const phoneConversation = document.getElementById('phone-conversation');
             const numberOfTeamsInput = document.getElementById('numberOfTeams');
             const numberOfRoundsInput = document.getElementById('numberOfRounds');
+            const initBtn = document.getElementById('start-init');
+            const initContainer = document.getElementById('init');
 
             // Create money ladder
             function createMoneyLadder() {
@@ -578,6 +591,17 @@
                 }
             }
 
+            function muteAllPlayback(){
+                mainThemeAudio.pause();
+                mainThemeAudio.currentTime = 0;
+                nextQuestionAudio.pause();
+                nextQuestionAudio.currentTime = 0;
+                loseAutdio.pause();
+                loseAutdio.currentTime = 0;
+                winAudio.pause();
+                winAudio.currentTime = 0;
+            }
+
             // Start game
             function startGame() {
                 var numberOfTeams = Number.parseInt(numberOfTeamsInput.value);
@@ -591,7 +615,7 @@
                 nextQuestion();
             }
 
-            function nextQuestion(){
+            function nextQuestion() {
                 gameState.currentTeam++;
                 if (gameState.currentTeam > gameState.teams.length - 1) {
                     gameState.currentTeam = 0;
@@ -604,12 +628,13 @@
                 }
 
                 gameState.selectedAnswerIndex = null;
- 
+                muteAllPlayback();
+                nextQuestionAudio.play();
                 drawQuestion();
             }
 
             function drawQuestion() {
-                
+
                 let usedQuestions = getUsedQuestions() || [];
                 let unusedQuestions = questions.map(function (value, index) {
                     return index;
@@ -662,24 +687,24 @@
 
                 if (gameState.teams[gameState.currentTeam].fiftyFiftyUsed === true) {
                     fiftyFiftyBtn.classList.add('used');
-                }else{
+                } else {
                     fiftyFiftyBtn.classList.remove('used');
                 }
                 if (gameState.teams[gameState.currentTeam].friendUsed === true) {
                     phoneBtn.classList.add('used');
-                }else{
+                } else {
                     phoneBtn.classList.remove('used');
                 }
                 if (gameState.teams[gameState.currentTeam].publicityUsed === true) {
                     audienceBtn.classList.add('used');
-                }else{
+                } else {
                     audienceBtn.classList.remove('used');
-                }           
+                }
                 if (gameState.teams[gameState.currentTeam].switchUsed === true) {
                     switchBtn.classList.add('used');
-                }else{
+                } else {
                     switchBtn.classList.remove('used');
-                } 
+                }
 
                 // Update money ladder
                 createMoneyLadder();
@@ -717,12 +742,16 @@
                 }
 
                 // Wait before moving to next question or ending game
-                setTimeout(() => {
-                    if (gameState.selectedAnswerIndex === correctIndex) {
+                if (gameState.selectedAnswerIndex === correctIndex) {
                         gameState.teams[gameState.currentTeam].score++;
+                        winAudio.play();
+                    }else{
+                        loseAutdio.play();
                     }
+                setTimeout(() => {
+                   
                     nextQuestion();
-                }, 1000);
+                }, 6000);
             }
 
             // End game
@@ -765,7 +794,7 @@
                 });
             }
 
-            function switchQuestion(){
+            function switchQuestion() {
                 if (gameState.teams[gameState.currentTeam].switchUsed === true) return;
 
                 gameState.teams[gameState.currentTeam].switchUsed = true;
@@ -778,9 +807,9 @@
                 if (gameState.teams[gameState.currentTeam].friendUsed === true) return;
 
                 gameState.teams[gameState.currentTeam].friendUsed = true;
-                
+
                 phoneBtn.classList.add('used');
-                
+
                 phoneModal.classList.remove('hidden');
             }
 
@@ -799,8 +828,8 @@
                 let percentages = [0, 0, 0, 0];
 
                 // Base chance for correct answer decreases as question level increases
-                let correctBasePercentage = 35 + Math.floor(40 * (gameState.maxRounds - gameState.round + 1)/ gameState.maxRounds);
-                
+                let correctBasePercentage = 35 + Math.floor(40 * (gameState.maxRounds - gameState.round + 1) / gameState.maxRounds);
+
                 // Add some randomness to the correct answer percentage
                 percentages[correctIndex] = Math.min(90, correctBasePercentage + Math.floor(Math.random() * 15));
 
@@ -850,12 +879,11 @@
                 audiencePollModal.classList.remove('hidden');
             }
 
-            function randomizeAnswers(){
-                questions.forEach((q)=>{
+            function randomizeAnswers() {
+                questions.forEach((q) => {
                     let rightAnswer = q.answers[q.correctIndex];
-                    q.answers.sort(()=> 0.5- Math.random());
+                    q.answers.sort(() => 0.5 - Math.random());
                     let newIndex = q.answers.indexOf(rightAnswer);
-                    console.log(`${q.correctIndex} -> ${newIndex}`);
                     q.correctIndex = newIndex;
 
                 });
@@ -909,16 +937,19 @@
             // Create initial money ladder
             // createMoneyLadder();
 
+            initBtn.addEventListener('click', function () {
+                initContainer.classList.add('hidden');
+
+                if (gameState.gameStarted) {
+                    updateUI();
+                } else {
+                    showStartScreen();
+                }
+            });
 
             initializeFromStorage();
             randomizeAnswers();
 
-
-            if (gameState.gameStarted) {
-                updateUI();
-            } else {
-                showStartScreen();
-            }
         });
     </script>
 </body>
