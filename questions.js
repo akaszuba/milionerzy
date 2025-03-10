@@ -90,7 +90,7 @@ const questions = [
 	},
 	{
 	  "question": "Co oznacza skrót RKO?",
-	  "answers": ["Ratownicze Kształcenie Ogólne", "Resusxytacja Krążeniowo-Oddechowa", "Ratunkowe Korytarze Operacyjne", "Regionalna Komenda Ochrony"],
+	  "answers": ["Ratownicze Kształcenie Ogólne", "Resuscytacja Krążeniowo-Oddechowa", "Ratunkowe Korytarze Operacyjne", "Regionalna Komenda Ochrony"],
 	  "correctIndex": 1
 	},
 	{
