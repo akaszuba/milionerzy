@@ -10,7 +10,7 @@ const questions = [
 	},
 	{
 	  "question": "Co należy zrobić, gdy ubranie zacznie się palić?",
-	  "answers": ["Biec po pomoc", "Polać wodą", "Położyć się i trulać", "Użyć gaśnicy"],
+	  "answers": ["Biec po pomoc", "Polać wodą", "Położyć się i turlać", "Użyć gaśnicy"],
 	  "correctIndex": 2
 	},
 	{
@@ -99,7 +99,7 @@ const questions = [
 	  "correctIndex": 3
 	},
 	{
-	  "question": "Jaki kolor mają błyskające światłą ostrzegawcze samochodu strażackiego?",
+	  "question": "Jaki kolor mają błyskające światła ostrzegawcze samochodu strażackiego?",
 	  "answers": ["Niebieskie", "Czerwone", "Zielone", "Białe"],
 	  "correctIndex": 0
 	},
